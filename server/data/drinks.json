@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "name": "Mojito",
+    "type": "cocktail",
+    "rarity": "common",
+    "ingredients": ["White rum", "Sugar", "Lime juice", "Soda water", "Mint"],
+    "description": "A refreshing Cuban cocktail with mint and lime",
+    "image": "https://via.placeholder.com/300x200/4ade80/ffffff?text=Mojito",
+    "alcoholContent": "10%"
+  },
+  {
+    "id": 2,
+    "name": "Old Fashioned",
+    "type": "cocktail",
+    "rarity": "rare",
+    "ingredients": ["Bourbon whiskey", "Sugar cube", "Angostura bitters", "Orange peel"],
+    "description": "A classic whiskey cocktail with bitters and sugar",
+    "image": "https://via.placeholder.com/300x200/f59e0b/ffffff?text=Old+Fashioned",
+    "alcoholContent": "25%"
+  },
+  {
+    "id": 3,
+    "name": "Cosmopolitan",
+    "type": "cocktail",
+    "rarity": "uncommon",
+    "ingredients": ["Vodka", "Cointreau", "Cranberry juice", "Lime juice"],
+    "description": "A pink cocktail made famous by Sex and the City",
+    "image": "https://via.placeholder.com/300x200/ec4899/ffffff?text=Cosmopolitan",
+    "alcoholContent": "15%"
+  },
+  {
+    "id": 4,
+    "name": "Margarita",
+    "type": "cocktail",
+    "rarity": "common",
+    "ingredients": ["Tequila", "Cointreau", "Lime juice", "Salt rim"],
+    "description": "A classic Mexican cocktail with tequila and lime",
+    "image": "https://via.placeholder.com/300x200/10b981/ffffff?text=Margarita",
+    "alcoholContent": "18%"
+  },
+  {
+    "id": 5,
+    "name": "Whiskey Sour",
+    "type": "cocktail",
+    "rarity": "uncommon",
+    "ingredients": ["Bourbon whiskey", "Lemon juice", "Simple syrup", "Egg white"],
+    "description": "A sour cocktail with whiskey and lemon",
+    "image": "https://via.placeholder.com/300x200/f97316/ffffff?text=Whiskey+Sour",
+    "alcoholContent": "20%"
+  },
+  {
+    "id": 6,
+    "name": "Pina Colada",
+    "type": "cocktail",
+    "rarity": "legendary",
+    "ingredients": ["White rum", "Coconut cream", "Pineapple juice", "Ice"],
+    "description": "A tropical cocktail that tastes like paradise",
+    "image": "https://via.placeholder.com/300x200/8b5cf6/ffffff?text=Pina+Colada",
+    "alcoholContent": "12%"
+  },
+  {
+    "id": 7,
+    "name": "Virgin Mojito",
+    "type": "mocktail",
+    "rarity": "common",
+    "ingredients": ["Sugar", "Lime juice", "Soda water", "Mint"],
+    "description": "All the refreshing taste of mojito, without the alcohol",
+    "image": "https://via.placeholder.com/300x200/22c55e/ffffff?text=Virgin+Mojito",
+    "alcoholContent": "0%"
+  },
+  {
+    "id": 8,
+    "name": "Shirley Temple",
+    "type": "mocktail",
+    "rarity": "common",
+    "ingredients": ["Ginger ale", "Grenadine", "Maraschino cherry"],
+    "description": "A sweet non-alcoholic cocktail named after the child actress",
+    "image": "https://via.placeholder.com/300x200/ef4444/ffffff?text=Shirley+Temple",
+    "alcoholContent": "0%"
+  }
+]
