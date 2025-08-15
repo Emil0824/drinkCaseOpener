@@ -20,7 +20,9 @@ The website should:
 │ ├── /src
 │ │ ├── /assets # Images, icons, styles
 │ │ ├── /components # Vue components
+│ │ ├── /composables 
 │ │ ├── /pages # Page components (Home, CaseOpen, About)
+│ │ ├── /router # Routing pages
 │ │ ├── /store # Pinia state management
 │ │ ├── /utils # Animation helpers, API wrappers
 │ │ ├── App.vue

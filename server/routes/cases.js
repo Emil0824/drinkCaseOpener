@@ -34,14 +34,14 @@ router.post('/open', async (req, res) => {
     const selectedDrink = selectRandomDrink(drinks);
     
     // Create animation sequence (for the CS:GO-style roulette)
-    const animationDrinks = generateAnimationSequence(drinks, selectedDrink);
+    const animationItems = generateAnimationSequence(drinks, selectedDrink);
     
     res.json({
       success: true,
       data: {
         winningDrink: selectedDrink,
-        animationSequence: animationDrinks,
-        winningPosition: Math.floor(animationDrinks.length * 0.7) // Position in the sequence where the winning drink appears
+        animationItems: animationItems,
+        caseType: caseType
       }
     });
   } catch (error) {
@@ -99,16 +99,18 @@ function selectRandomDrink(drinks) {
 // Helper function to generate animation sequence
 function generateAnimationSequence(drinks, winningDrink) {
   const sequence = [];
-  const sequenceLength = 20;
+  const sequenceLength = 30; // More items for smoother animation
   
-  // Fill most of the sequence with random drinks
-  for (let i = 0; i < sequenceLength - 1; i++) {
+  // Fill the sequence with random drinks, ensuring variety
+  for (let i = 0; i < sequenceLength; i++) {
     const randomDrink = drinks[Math.floor(Math.random() * drinks.length)];
-    sequence.push(randomDrink);
+    
+    // Add unique IDs for Vue's key binding since we may have duplicates
+    sequence.push({
+      ...randomDrink,
+      id: `${randomDrink.id || randomDrink.name.replace(/\s+/g, '-')}-${i}`
+    });
   }
-  
-  // Insert the winning drink at the end (it will be positioned correctly by winningPosition)
-  sequence.push(winningDrink);
   
   return sequence;
 }
