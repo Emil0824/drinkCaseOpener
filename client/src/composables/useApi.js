@@ -19,11 +19,11 @@ export function useApi() {
       },
     }
 
-    // Use relative URL in production, full URL in development
-    const baseUrl = import.meta.env.MODE === 'production' ? '' : 'http://localhost:3000'
+    // Use environment variable for API URL, fallback to relative URL
+    const baseUrl = import.meta.env.VITE_API_URL || '/api'
 
     try {
-      const response = await fetch(`${baseUrl}/api${endpoint}`, {
+      const response = await fetch(`${baseUrl}${endpoint}`, {
         ...defaultOptions,
         ...options,
         headers: {

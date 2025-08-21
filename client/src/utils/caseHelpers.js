@@ -86,7 +86,10 @@ export const createApiRequest = async (endpoint, options = {}) => {
     },
   }
 
-  const response = await fetch(`http://localhost:3000/api${endpoint}`, {
+  // Use environment variable for API URL, fallback to relative URL
+  const baseUrl = import.meta.env.VITE_API_URL || '/api'
+
+  const response = await fetch(`${baseUrl}${endpoint}`, {
     ...defaultOptions,
     ...options,
     headers: {

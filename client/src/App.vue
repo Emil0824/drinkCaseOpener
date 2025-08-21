@@ -57,7 +57,7 @@ const checkServerHealth = async () => {
   serverStatus.value = null
   
   try {
-    const response = await fetch('http://localhost:3000/api/health')
+    const response = await fetch('/api/health')
     
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`)
