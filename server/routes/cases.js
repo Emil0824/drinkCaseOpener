@@ -1,118 +1,94 @@
 import express from 'express';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import DrinkService from '../services/drinkService.js';
 
 const router = express.Router();
-
-// Rarity weights for random selection
-const RARITY_WEIGHTS = {
-  common: 50,
-  uncommon: 30,
-  rare: 15,
-  legendary: 5
-};
+const drinkService = new DrinkService();
 
 // Open a case - returns a random drink with animation data
 router.post('/open', async (req, res) => {
   try {
-    const { caseType = 'all' } = req.body;
+    const { caseType = 'random', winningPosition } = req.body;
     
-    const drinksPath = path.join(__dirname, '..', 'data', 'drinks.json');
-    const drinksData = await fs.readFile(drinksPath, 'utf8');
-    let drinks = JSON.parse(drinksData);
+    console.log(`🎲 Opening case of type: ${caseType}`);
     
-    // Filter drinks by case type if specified
-    if (caseType !== 'all') {
-      drinks = drinks.filter(d => d.type === caseType);
-    }
+    // Generate case opening data using the drink service
+    const caseData = await drinkService.generateCaseOpening(caseType, winningPosition);
     
-    // Select random drink based on rarity weights
-    const selectedDrink = selectRandomDrink(drinks);
-    
-    // Create animation sequence (for the CS:GO-style roulette)
-    const animationItems = generateAnimationSequence(drinks, selectedDrink);
-    
+    // Ensure all drinks in the animation are from the same category
+    console.log(`📊 Case opened with ${caseData.drinks.length} items from category: ${caseType}`);
+
     res.json({
       success: true,
       data: {
-        winningDrink: selectedDrink,
-        animationItems: animationItems,
-        caseType: caseType
+        winningDrink: caseData.winningDrink,
+        animationItems: caseData.drinks,
+        winningIndex: caseData.winningIndex,
+        caseType: caseData.caseType,
+        timestamp: new Date().toISOString()
       }
     });
   } catch (error) {
     console.error('Error opening case:', error);
-    res.status(500).json({ success: false, message: 'Failed to open case' });
+    res.status(500).json({ success: false, message: error.message || 'Failed to open case' });
   }
 });
 
 // Get available case types
-router.get('/types', async (req, res) => {
+router.get('/cases', async (req, res) => {
   try {
-    const drinksPath = path.join(__dirname, '..', 'data', 'drinks.json');
-    const drinksData = await fs.readFile(drinksPath, 'utf8');
-    const drinks = JSON.parse(drinksData);
+    const categories = await drinkService.getCategories();
+    const stats = await drinkService.getStats();
     
-    const types = [...new Set(drinks.map(d => d.type))];
+    // Create case types based on available categories
+    const caseTypes = [
+      { 
+        id: 'random', 
+        name: 'Mixed Case', 
+        description: 'Contains all types of drinks',
+        drinkCount: stats.totalDrinks,
+        rating: stats.avgRating || 3.0
+      }
+    ];
+
+    // Add category-based cases
+    for (const category of categories) {
+      const categoryDrinks = await drinkService.getDrinksByCategory(category);
+      
+      if (categoryDrinks.length >= 3) { // Only add categories with enough drinks
+        let description = `Contains only ${category.toLowerCase()}`;
+        
+        // Calculate average rating for this category
+        const ratingsExist = categoryDrinks.filter(d => d.rating !== null && d.rating !== undefined);
+        let avgRating = 3.0; // Default rating
+        if (ratingsExist.length > 0) {
+          avgRating = ratingsExist.reduce((sum, d) => sum + d.rating, 0) / ratingsExist.length;
+          avgRating = Math.round(avgRating * 10) / 10;
+        }
+        
+        // Special descriptions for certain categories
+        if (category.toLowerCase().includes('shot') || category.toLowerCase().includes('cocktail')) {
+          description = `Premium ${category.toLowerCase()} selection`;
+        }
+        
+        caseTypes.push({
+          id: category, // Use original category name as ID
+          name: `${category} Case`,
+          description,
+          drinkCount: categoryDrinks.length,
+          rating: avgRating,
+          category
+        });
+      }
+    }
     
     res.json({
       success: true,
-      data: [
-        { id: 'all', name: 'Mixed Case', description: 'Contains all types of drinks' },
-        ...types.map(type => ({
-          id: type,
-          name: type.charAt(0).toUpperCase() + type.slice(1) + ' Case',
-          description: `Contains only ${type}s`
-        }))
-      ]
+      data: caseTypes
     });
   } catch (error) {
     console.error('Error fetching case types:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch case types' });
   }
 });
-
-// Helper function to select random drink based on rarity
-function selectRandomDrink(drinks) {
-  const totalWeight = drinks.reduce((sum, drink) => {
-    return sum + (RARITY_WEIGHTS[drink.rarity] || 10);
-  }, 0);
-  
-  let random = Math.random() * totalWeight;
-  
-  for (const drink of drinks) {
-    const weight = RARITY_WEIGHTS[drink.rarity] || 10;
-    if (random <= weight) {
-      return drink;
-    }
-    random -= weight;
-  }
-  
-  // Fallback to first drink if something goes wrong
-  return drinks[0];
-}
-
-// Helper function to generate animation sequence
-function generateAnimationSequence(drinks, winningDrink) {
-  const sequence = [];
-  const sequenceLength = 30; // More items for smoother animation
-  
-  // Fill the sequence with random drinks, ensuring variety
-  for (let i = 0; i < sequenceLength; i++) {
-    const randomDrink = drinks[Math.floor(Math.random() * drinks.length)];
-    
-    // Add unique IDs for Vue's key binding since we may have duplicates
-    sequence.push({
-      ...randomDrink,
-      id: `${randomDrink.id || randomDrink.name.replace(/\s+/g, '-')}-${i}`
-    });
-  }
-  
-  return sequence;
-}
 
 export default router;

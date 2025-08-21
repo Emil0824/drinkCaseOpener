@@ -75,7 +75,7 @@
 
     <!-- Result Display -->
     <div v-if="lastOpenedDrink && spinCompleted" class="mt-12 p-6 bg-white/10 rounded-xl border border-white/20">
-      <h3 class="text-2xl font-bold text-center mb-4" :class="getRarityColor(lastOpenedDrink.rarity)">
+      <h3 class="text-2xl font-bold text-center mb-4" :class="getRatingColor(lastOpenedDrink.rating)">
         {{ lastOpenedDrink.name }}
       </h3>
       
@@ -95,9 +95,9 @@
           </div>
           
           <div class="mb-3">
-            <span class="text-gray-400">Rarity:</span>
-            <span class="ml-2 capitalize font-semibold" :class="getRarityColor(lastOpenedDrink.rarity)">
-              {{ lastOpenedDrink.rarity }}
+            <span class="text-gray-400">Rating:</span>
+            <span class="ml-2 font-semibold" :class="getRatingColor(lastOpenedDrink.rating)">
+              {{ lastOpenedDrink.rating ? `${lastOpenedDrink.rating}/5 ⭐` : 'Not rated' }}
             </span>
           </div>
           
@@ -149,7 +149,7 @@ import {
   getCaseTitle,
   getCaseGradient,
   getCaseIcon,
-  getRarityColor,
+  getRatingColor,
   createApiRequest,
   isValidCaseType
 } from '../utils/caseHelpers.js'

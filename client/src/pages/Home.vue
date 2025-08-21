@@ -82,7 +82,6 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { 
-  CASE_TYPES,
   getCaseGradient,
   getCaseIcon,
   getCaseBadgeColor,
@@ -97,32 +96,13 @@ const caseTypes = ref([])
 const isLoading = ref(true)
 const error = ref(null)
 
-// Default case types for offline mode
-const DEFAULT_CASE_TYPES = [
-  { 
-    id: CASE_TYPES.ALL, 
-    name: 'Mixed Case', 
-    description: 'Contains all types of drinks - cocktails, mocktails, and more!' 
-  },
-  { 
-    id: CASE_TYPES.COCKTAIL, 
-    name: 'Cocktail Case', 
-    description: 'Premium alcoholic cocktails and mixed drinks' 
-  },
-  { 
-    id: CASE_TYPES.MOCKTAIL, 
-    name: 'Mocktail Case', 
-    description: 'Refreshing non-alcoholic beverages and mocktails' 
-  }
-]
-
 // Methods
 const fetchCaseTypes = async () => {
   isLoading.value = true
   error.value = null
   
   try {
-    const data = await createApiRequest('/cases/types')
+    const data = await createApiRequest('/cases/cases')
     
     if (Array.isArray(data)) {
       caseTypes.value = data
@@ -131,7 +111,6 @@ const fetchCaseTypes = async () => {
     }
   } catch (err) {
     console.error('Failed to fetch case types:', err)
-    caseTypes.value = DEFAULT_CASE_TYPES
     error.value = 'Using offline mode - server not available'
   } finally {
     isLoading.value = false

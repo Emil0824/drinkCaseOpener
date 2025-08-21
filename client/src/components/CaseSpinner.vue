@@ -15,10 +15,19 @@
           v-for="(item, index) in displayItems" 
           :key="`${item.id}-${index}`"
           class="item-slot"
-          :class="getRarityClass(item.rarity)"
+          :class="getRatingClass(item.rating)"
         >
           <div class="item-content">
-            <div class="drink-emoji">{{ getDrinkEmoji(item.type, item.name) }}</div>
+            <div class="drink-image-container">
+              <img 
+                v-if="item.image && item.name !== '???'" 
+                :src="item.image" 
+                :alt="item.name"
+                class="drink-image"
+                @error="onImageError"
+              />
+              <div v-else class="drink-emoji">{{ getDrinkEmoji(item.type, item.name) }}</div>
+            </div>
             <div class="item-name">{{ item.name }}</div>
           </div>
         </div>
@@ -111,7 +120,7 @@ const createPlaceholderItems = (count = 40) => {
     id: `placeholder-${index}`,
     name: '???',
     type: 'mystery',
-    rarity: 'common'
+    rating: 3.0
   }))
 }
 
@@ -242,14 +251,13 @@ const reset = () => {
   displayItems.value = createPlaceholderItems()
 }
 
-const getRarityClass = (rarity) => {
-  const rarityClasses = {
-    common: 'rarity-common',
-    uncommon: 'rarity-uncommon', 
-    rare: 'rarity-rare',
-    legendary: 'rarity-legendary'
-  }
-  return rarityClasses[rarity] || 'rarity-common'
+const getRatingClass = (rating) => {
+  if (!rating) return 'rating-default'
+  
+  if (rating >= 4.5) return 'rating-excellent'  // 4.5+ stars
+  if (rating >= 4.0) return 'rating-great'     // 4.0-4.4 stars
+  if (rating >= 3.5) return 'rating-good'      // 3.5-3.9 stars
+  return 'rating-default'                       // Below 3.5 stars
 }
 
 // Emoji mapping constants
@@ -290,6 +298,18 @@ const getDrinkEmoji = (type, name) => {
   
   // Fallback to type-based emojis
   return TYPE_EMOJIS[type] || '🍹'
+}
+
+const onImageError = (event) => {
+  // Hide broken image and show fallback emoji
+  event.target.style.display = 'none'
+  const container = event.target.parentElement
+  if (container && !container.querySelector('.drink-emoji')) {
+    const fallback = document.createElement('div')
+    fallback.className = 'drink-emoji'
+    fallback.textContent = '🍹'
+    container.appendChild(fallback)
+  }
 }
 
 // Watch for prop changes
@@ -449,9 +469,32 @@ onMounted(() => {
   transform: scale(1.05) translateY(-2px);
 }
 
+.drink-image-container {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.drink-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.375rem;
+  transition: transform 0.3s ease;
+}
+
+.drink-image:hover {
+  transform: scale(1.1);
+}
+
 .drink-emoji {
   font-size: 2.5rem;
-  margin-bottom: 0.375rem;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
 }
@@ -471,8 +514,8 @@ onMounted(() => {
   max-width: 100%;
 }
 
-/* Rarity Colors with beautiful glowing borders */
-.rarity-common .item-content {
+/* Rating Colors with beautiful glowing borders */
+.rating-default .item-content {
   background: linear-gradient(135deg, 
     rgba(107, 114, 128, 0.3), 
     rgba(75, 85, 99, 0.5)
@@ -484,7 +527,7 @@ onMounted(() => {
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.rarity-uncommon .item-content {
+.rating-good .item-content {
   background: linear-gradient(135deg, 
     rgba(34, 197, 94, 0.3), 
     rgba(21, 128, 61, 0.5)
@@ -497,7 +540,7 @@ onMounted(() => {
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.rarity-rare .item-content {
+.rating-great .item-content {
   background: linear-gradient(135deg, 
     rgba(59, 130, 246, 0.3), 
     rgba(29, 78, 216, 0.5)
@@ -510,7 +553,7 @@ onMounted(() => {
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-.rarity-legendary .item-content {
+.rating-excellent .item-content {
   background: linear-gradient(135deg, 
     rgba(147, 51, 234, 0.4), 
     rgba(126, 34, 206, 0.6)
@@ -522,10 +565,10 @@ onMounted(() => {
     0 0 50px rgba(147, 51, 234, 0.4),
     0 0 65px rgba(147, 51, 234, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  animation: legendary-glow 2s ease-in-out infinite alternate;
+  animation: excellent-glow 2s ease-in-out infinite alternate;
 }
 
-@keyframes legendary-glow {
+@keyframes excellent-glow {
   from {
     box-shadow: 
       0 4px 20px rgba(0, 0, 0, 0.5),
@@ -544,13 +587,13 @@ onMounted(() => {
   }
 }
 
-/* Add subtle floating animation to legendary items */
-.rarity-legendary .item-content {
-  animation: legendary-glow 2s ease-in-out infinite alternate, 
-             legendary-float 3s ease-in-out infinite;
+/* Add subtle floating animation to excellent rated items */
+.rating-excellent .item-content {
+  animation: excellent-glow 2s ease-in-out infinite alternate, 
+             excellent-float 3s ease-in-out infinite;
 }
 
-@keyframes legendary-float {
+@keyframes excellent-float {
   0%, 100% {
     transform: translateY(0);
   }
@@ -559,9 +602,9 @@ onMounted(() => {
   }
 }
 
-/* Sparkle effects for legendary items */
-.rarity-legendary .drink-emoji::after {
-  content: '✨';
+/* Sparkle effects for excellent rated items */
+.rating-excellent .drink-emoji::after {
+  content: '⭐';
   position: absolute;
   top: -0.5rem;
   right: -0.5rem;

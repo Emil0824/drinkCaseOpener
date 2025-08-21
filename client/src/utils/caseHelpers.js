@@ -2,66 +2,80 @@
  * Utility functions for case-related operations
  */
 
-// Case configuration constants
-export const CASE_TYPES = {
-  ALL: 'all',
-  COCKTAIL: 'cocktail',
-  MOCKTAIL: 'mocktail'
-}
-
-export const RARITY_LEVELS = {
-  COMMON: 'common',
-  UNCOMMON: 'uncommon',
-  RARE: 'rare',
-  LEGENDARY: 'legendary'
+export const RATING_LEVELS = {
+  DEFAULT: 'default',
+  GOOD: 'good',
+  GREAT: 'great',
+  EXCELLENT: 'excellent'
 }
 
 // Case styling utilities
 export const getCaseGradient = (caseId) => {
   const gradients = {
-    [CASE_TYPES.ALL]: 'bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500',
-    [CASE_TYPES.COCKTAIL]: 'bg-gradient-to-br from-purple-500 via-pink-500 to-red-500',
-    [CASE_TYPES.MOCKTAIL]: 'bg-gradient-to-br from-green-400 via-blue-500 to-purple-500'
+    'random': 'bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500',
+    'cocktails': 'bg-gradient-to-br from-purple-500 via-pink-500 to-red-500',
+    'shots': 'bg-gradient-to-br from-red-500 via-pink-500 to-purple-500',
+    'champagnedrinkar': 'bg-gradient-to-br from-yellow-300 via-yellow-400 to-amber-500',
+    'drinkar': 'bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600',
+    'longdrinks': 'bg-gradient-to-br from-teal-400 via-cyan-500 to-blue-500'
   }
-  return gradients[caseId] || gradients[CASE_TYPES.ALL]
+  return gradients[caseId] || 'bg-gradient-to-br from-gray-400 via-gray-500 to-gray-600'
 }
 
 export const getCaseIcon = (caseId) => {
   const icons = {
-    [CASE_TYPES.ALL]: '🎲',
-    [CASE_TYPES.COCKTAIL]: '🍸',
-    [CASE_TYPES.MOCKTAIL]: '🧃'
+    'random': '🎲',
+    'cocktails': '🍸',
+    'shots': '🥃',
+    'champagnedrinkar': '🥂',
+    'drinkar': '🍹',
+    'longdrinks': '🍹'
   }
   return icons[caseId] || '📦'
 }
 
 export const getCaseTitle = (caseId) => {
   const titles = {
-    [CASE_TYPES.ALL]: 'Mixed Case',
-    [CASE_TYPES.COCKTAIL]: 'Cocktail Case',
-    [CASE_TYPES.MOCKTAIL]: 'Mocktail Case'
+    'random': 'Mixed Case',
+    'cocktails': 'Cocktails Case',
+    'shots': 'Shots Case',
+    'champagnedrinkar': 'Champagne Case',
+    'drinkar': 'Drinks Case',
+    'longdrinks': 'Long Drinks Case'
   }
   return titles[caseId] || 'Drink Case'
 }
 
 export const getCaseBadgeColor = (caseId) => {
   const colors = {
-    [CASE_TYPES.ALL]: 'bg-orange-500/20 text-orange-200 border border-orange-500/50',
-    [CASE_TYPES.COCKTAIL]: 'bg-purple-500/20 text-purple-200 border border-purple-500/50',
-    [CASE_TYPES.MOCKTAIL]: 'bg-green-500/20 text-green-200 border border-green-500/50'
+    'random': 'bg-orange-500/20 text-orange-200 border border-orange-500/50',
+    'cocktails': 'bg-purple-500/20 text-purple-200 border border-purple-500/50',
+    'shots': 'bg-red-500/20 text-red-200 border border-red-500/50',
+    'champagnedrinkar': 'bg-yellow-500/20 text-yellow-200 border border-yellow-500/50',
+    'drinkar': 'bg-blue-500/20 text-blue-200 border border-blue-500/50',
+    'longdrinks': 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/50'
   }
-  return colors[caseId] || colors[CASE_TYPES.ALL]
+  return colors[caseId] || 'bg-gray-500/20 text-gray-200 border border-gray-500/50'
 }
 
-// Rarity styling utilities
-export const getRarityColor = (rarity) => {
-  const colors = {
-    [RARITY_LEVELS.COMMON]: 'text-gray-400',
-    [RARITY_LEVELS.UNCOMMON]: 'text-green-400',
-    [RARITY_LEVELS.RARE]: 'text-blue-400',
-    [RARITY_LEVELS.LEGENDARY]: 'text-purple-400'
-  }
-  return colors[rarity] || 'text-white'
+// Rating styling utilities
+export const getRatingColor = (rating) => {
+  if (!rating) return 'text-gray-400'
+  
+  if (rating >= 4.5) return 'text-purple-400'  // Excellent (4.5+ stars)
+  if (rating >= 4.0) return 'text-blue-400'    // Great (4.0-4.4 stars)
+  if (rating >= 3.5) return 'text-green-400'   // Good (3.5-3.9 stars)
+  return 'text-gray-400'                        // Default (below 3.5 stars)
+}
+
+// Get rating level from numeric rating
+export const getRatingLevel = (rating) => {
+  if (!rating) return RATING_LEVELS.DEFAULT
+  
+  if (rating >= 4.5) return RATING_LEVELS.EXCELLENT
+  if (rating >= 4.0) return RATING_LEVELS.GREAT
+  if (rating >= 3.5) return RATING_LEVELS.GOOD
+  return RATING_LEVELS.DEFAULT
 }
 
 // API utilities
@@ -96,9 +110,10 @@ export const createApiRequest = async (endpoint, options = {}) => {
 
 // Validation utilities
 export const isValidCaseType = (caseType) => {
-  return Object.values(CASE_TYPES).includes(caseType)
+  // Accept any string as a valid case type since they come from the server dynamically
+  return typeof caseType === 'string' && caseType.length > 0
 }
 
-export const isValidRarity = (rarity) => {
-  return Object.values(RARITY_LEVELS).includes(rarity)
+export const isValidRating = (rating) => {
+  return typeof rating === 'number' && rating >= 0 && rating <= 5
 }
