@@ -31,7 +31,7 @@ services:
       dockerfile: Dockerfile
       args:
         - NODE_ENV=production
-        - VITE_API_URL=http://api:3000/api  # Use relative URL since nginx will proxy
+        - VITE_API_URL=/api  # Use relative URL since nginx will proxy
     container_name: drink-case-web
     restart: unless-stopped
     ports:
