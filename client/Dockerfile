@@ -17,7 +17,7 @@ COPY . .
 
 # Accept build arguments
 ARG NODE_ENV=production
-ARG VITE_API_URL=http://localhost:3000/api
+ARG VITE_API_URL=/api
 
 # Set build-time environment variables from args
 ENV NODE_ENV=$NODE_ENV
