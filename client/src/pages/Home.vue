@@ -102,7 +102,7 @@ const fetchCaseTypes = async () => {
   error.value = null
   
   try {
-    const data = await createApiRequest('/cases')
+    const data = await createApiRequest('/cases/cases')
     
     if (Array.isArray(data)) {
       caseTypes.value = data
