@@ -23,8 +23,8 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
-app.use('/api/drinks', drinkRoutes);
-app.use('/api/cases', caseRoutes);
+app.use('/api', drinkRoutes);
+app.use('/api', caseRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
