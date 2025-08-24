@@ -28,7 +28,8 @@
           <!-- Case Box -->
           <div 
             class="relative w-full aspect-square rounded-2xl shadow-2xl transition-all duration-300 group-hover:shadow-3xl group-focus:shadow-3xl"
-            :class="getCaseGradient(caseType.id)"
+            :class="!caseType.color ? getCaseGradient(caseType.id) : ''"
+            :style="caseType.color ? getCaseGradient(caseType.id, caseType.color) : {}"
           >
             <!-- Inner border -->
             <div class="absolute inset-4 border-4 border-white/30 rounded-xl"></div>
@@ -36,7 +37,7 @@
             <!-- Case icon -->
             <div class="absolute inset-0 flex items-center justify-center">
               <div class="text-6xl transform transition-transform duration-300 group-hover:scale-110 group-focus:scale-110">
-                {{ getCaseIcon(caseType.id) }}
+                {{ caseType.icon}}
               </div>
             </div>
             
@@ -56,7 +57,8 @@
             <!-- Case Badge -->
             <span 
               class="inline-block px-4 py-2 rounded-full text-sm font-semibold transition-colors"
-              :class="getCaseBadgeColor(caseType.id)"
+              :class="!caseType.color ? getCaseBadgeColor(caseType.id) : ''"
+              :style="caseType.color ? getCaseBadgeColor(caseType.id, caseType.color) : {}"
             >
               {{ caseType.name }}
             </span>

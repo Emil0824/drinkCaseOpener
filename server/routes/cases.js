@@ -36,7 +36,7 @@ router.post('/open', async (req, res) => {
 // Get available case types
 router.get('/cases', async (req, res) => {
   try {
-    const categories = await drinkService.getCategories();
+    const categoriesWithData = await drinkService.getCategoriesWithIconsAndColors();
     const stats = await drinkService.getStats();
     
     // Create case types based on available categories
@@ -45,17 +45,19 @@ router.get('/cases', async (req, res) => {
         id: 'random', 
         name: 'Mixed Case', 
         description: 'Contains all types of drinks',
+        icon: '🎲',
+        color: '#F97316', // Orange color for random
         drinkCount: stats.totalDrinks,
         rating: stats.avgRating || 3.0
       }
     ];
 
-    // Add category-based cases
-    for (const category of categories) {
-      const categoryDrinks = await drinkService.getDrinksByCategory(category);
+    // Add category-based cases with icons and colors
+    for (const categoryData of categoriesWithData) {
+      const categoryDrinks = await drinkService.getDrinksByCategory(categoryData.name);
       
       if (categoryDrinks.length >= 3) { // Only add categories with enough drinks
-        let description = `Contains only ${category.toLowerCase()}`;
+        let description = `Contains only ${categoryData.name.toLowerCase()}`;
         
         // Calculate average rating for this category
         const ratingsExist = categoryDrinks.filter(d => d.rating !== null && d.rating !== undefined);
@@ -66,17 +68,19 @@ router.get('/cases', async (req, res) => {
         }
         
         // Special descriptions for certain categories
-        if (category.toLowerCase().includes('shot') || category.toLowerCase().includes('cocktail')) {
-          description = `Premium ${category.toLowerCase()} selection`;
+        if (categoryData.name.toLowerCase().includes('shot') || categoryData.name.toLowerCase().includes('cocktail')) {
+          description = `Premium ${categoryData.name.toLowerCase()} selection`;
         }
         
         caseTypes.push({
-          id: category, // Use original category name as ID
-          name: `${category} Case`,
+          id: categoryData.name, // Use original category name as ID
+          name: `${categoryData.name} Case`,
           description,
+          icon: categoryData.icon, // Include the emoji icon
+          color: categoryData.color, // Include the hex color
           drinkCount: categoryDrinks.length,
           rating: avgRating,
-          category
+          category: categoryData.name
         });
       }
     }

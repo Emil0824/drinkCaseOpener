@@ -10,16 +10,22 @@ export const RATING_LEVELS = {
 }
 
 // Case styling utilities
-export const getCaseGradient = (caseId) => {
-  const gradients = {
-    'random': 'bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500',
-    'cocktails': 'bg-gradient-to-br from-purple-500 via-pink-500 to-red-500',
-    'shots': 'bg-gradient-to-br from-red-500 via-pink-500 to-purple-500',
-    'champagnedrinkar': 'bg-gradient-to-br from-yellow-300 via-yellow-400 to-amber-500',
-    'drinkar': 'bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600',
-    'longdrinks': 'bg-gradient-to-br from-teal-400 via-cyan-500 to-blue-500'
+export const getCaseGradient = (caseId, serverColor = null) => {
+  // If server provided a color, generate gradient from it
+  if (serverColor) {
+    return generateGradientFromColor(serverColor)
   }
-  return gradients[caseId] || 'bg-gradient-to-br from-gray-400 via-gray-500 to-gray-600'
+
+  // Fallback to default gradient
+  return 'bg-gradient-to-br from-gray-400 via-gray-500 to-gray-600'
+}
+
+// Helper function to generate gradient from hex color
+const generateGradientFromColor = (hexColor) => {
+  // Convert hex to inline style gradient
+  return {
+    background: `linear-gradient(to bottom right, ${hexColor}DD, ${hexColor}AA, ${hexColor}77)`
+  }
 }
 
 export const getCaseIcon = (caseId) => {
@@ -46,7 +52,13 @@ export const getCaseTitle = (caseId) => {
   return titles[caseId] || 'Drink Case'
 }
 
-export const getCaseBadgeColor = (caseId) => {
+export const getCaseBadgeColor = (caseId, serverColor = null) => {
+  // If server provided a color, generate badge colors from it
+  if (serverColor) {
+    return generateBadgeFromColor(serverColor)
+  }
+  
+  // Fallback to hardcoded colors
   const colors = {
     'random': 'bg-orange-500/20 text-orange-200 border border-orange-500/50',
     'cocktails': 'bg-purple-500/20 text-purple-200 border border-purple-500/50',
@@ -56,6 +68,16 @@ export const getCaseBadgeColor = (caseId) => {
     'longdrinks': 'bg-cyan-500/20 text-cyan-200 border border-cyan-500/50'
   }
   return colors[caseId] || 'bg-gray-500/20 text-gray-200 border border-gray-500/50'
+}
+
+// Helper function to generate badge colors from hex color
+const generateBadgeFromColor = (hexColor) => {
+  return {
+    backgroundColor: `${hexColor}33`, // 20% opacity
+    color: `${hexColor}DD`, // 87% opacity for text
+    borderColor: `${hexColor}80`, // 50% opacity for border
+    border: `1px solid ${hexColor}80`
+  }
 }
 
 // Rating styling utilities

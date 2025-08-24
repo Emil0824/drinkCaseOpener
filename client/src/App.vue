@@ -14,7 +14,7 @@
       </section>
 
       <!-- Router Content -->
-      <section class="max-w-4xl mx-auto">
+      <section class="max-w-7xl mx-auto">
         <router-view />
       </section>
 
@@ -43,6 +43,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import Navbar from './components/Navbar.vue'
+import { createApiRequest } from './utils/caseHelpers.js'
 
 // Reactive state
 const isChecking = ref(false)
@@ -57,25 +58,27 @@ const checkServerHealth = async () => {
   serverStatus.value = null
   
   try {
-    const response = await fetch('/api/health')
+    const healthData = await createApiRequest('/health')
     
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-    }
+    // Extract status and timestamp from health data
+    const status = healthData?.status || 'OK'
+    const uptime = healthData?.uptime ? `${Math.floor(healthData.uptime)}s` : 'unknown'
     
-    const data = await response.json()
     serverStatus.value = {
       success: true,
-      message: 'Server is running and accessible!'
+      message: `✅ Server is healthy! Status: ${status} | Uptime: ${uptime}`,
+      data: healthData
     }
   } catch (error) {
     console.error('Server health check failed:', error)
     serverStatus.value = {
       success: false,
-      message: `Cannot connect to server: ${error.message}`
+      message: `❌ Server connection failed: ${error.message}`,
+      error: error
     }
   } finally {
     isChecking.value = false
   }
 }
+
 </script>

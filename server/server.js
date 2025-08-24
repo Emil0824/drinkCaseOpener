@@ -28,7 +28,15 @@ app.use('/api/cases', caseRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ success: true, message: 'Server is running!' });
+  res.json({ 
+    success: true, 
+    message: 'Server is running!',
+    data: {
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime()
+    }
+  });
 });
 
 // Error handling middleware

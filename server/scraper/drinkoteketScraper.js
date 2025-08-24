@@ -11,12 +11,12 @@ class DrinkoteketScraper {
   constructor() {
     this.baseUrl = 'https://drinkoteket.se';
     this.allDrinksUrl = `${this.baseUrl}/alla-drinkar/`;
-    this.dataDir = path.join(process.cwd(), '..', 'data');
+    this.dataDir = path.join(process.cwd(), '..', 'data-immutable');
     this.drinksFile = path.join(this.dataDir, 'drinks.json');
     this.categoriesFile = path.join(this.dataDir, 'categories.json');
     this.ingredientsFile = path.join(this.dataDir, 'ingredients.json');
     this.requestDelay = 500;
-    
+
     // User agent to identify ourselves properly
     this.userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36';
     

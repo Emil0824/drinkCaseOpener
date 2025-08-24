@@ -10,10 +10,16 @@ class DrinkService {
     this.dataDir = path.join(process.cwd(), 'data');
     this.drinksFile = path.join(this.dataDir, 'drinks.json');
     this.categoriesFile = path.join(this.dataDir, 'categories.json');
+    this.categoryIconsFile = path.join(this.dataDir, 'categoryIcons.json');
+    this.categoryColorsFile = path.join(this.dataDir, 'categoryColors.json');
     this.drinks = null;
     this.categories = null;
+    this.categoryIcons = null;
+    this.categoryColors = null;
     this.lastLoaded = null;
     this.lastCategoriesLoaded = null;
+    this.lastIconsLoaded = null;
+    this.lastColorsLoaded = null;
   }
 
   /**
@@ -39,6 +45,60 @@ class DrinkService {
         return [];
       }
       console.error('❌ Error loading drinks:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Load category colors from JSON file
+   */
+  async loadCategoryColors() {
+    try {
+      const stats = await fs.stat(this.categoryColorsFile);
+      
+      // Only reload if file has been modified or not loaded yet
+      if (!this.categoryColors || !this.lastColorsLoaded || stats.mtime > this.lastColorsLoaded) {
+        console.log('📖 Loading category colors data...');
+        const data = await fs.readFile(this.categoryColorsFile, 'utf8');
+        this.categoryColors = JSON.parse(data);
+        this.lastColorsLoaded = new Date();
+        console.log(`✅ Loaded ${Object.keys(this.categoryColors).length} category colors`);
+      }
+      
+      return this.categoryColors;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        console.warn('⚠️  No category colors data found. Using default colors.');
+        return {};
+      }
+      console.error('❌ Error loading category colors:', error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Load category icons from JSON file
+   */
+  async loadCategoryIcons() {
+    try {
+      const stats = await fs.stat(this.categoryIconsFile);
+      
+      // Only reload if file has been modified or not loaded yet
+      if (!this.categoryIcons || !this.lastIconsLoaded || stats.mtime > this.lastIconsLoaded) {
+        console.log('📖 Loading category icons data...');
+        const data = await fs.readFile(this.categoryIconsFile, 'utf8');
+        this.categoryIcons = JSON.parse(data);
+        this.lastIconsLoaded = new Date();
+        console.log(`✅ Loaded ${Object.keys(this.categoryIcons).length} category icons`);
+      }
+      
+      return this.categoryIcons;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        console.warn('⚠️  No category icons data found. Using default icons.');
+        return {};
+      }
+      console.error('❌ Error loading category icons:', error.message);
       throw error;
     }
   }
@@ -155,6 +215,44 @@ class DrinkService {
   async getCategories() {
     const categories = await this.loadCategories();
     return Object.keys(categories).sort();
+  }
+
+  /**
+   * Get categories with their emoji icons and colors
+   */
+  async getCategoriesWithIconsAndColors() {
+    const categories = await this.loadCategories();
+    const categoryIcons = await this.loadCategoryIcons();
+    const categoryColors = await this.loadCategoryColors();
+    
+    const categoriesWithData = [];
+    
+    for (const categoryName of Object.keys(categories).sort()) {
+      categoriesWithData.push({
+        name: categoryName,
+        icon: categoryIcons[categoryName] || '📦', // Default icon if not found
+        color: categoryColors[categoryName] || '#6B7280', // Default gray color if not found
+        drinkCount: categories[categoryName].length
+      });
+    }
+    
+    return categoriesWithData;
+  }
+
+  /**
+   * Get icon for a specific category
+   */
+  async getCategoryIcon(categoryName) {
+    const categoryIcons = await this.loadCategoryIcons();
+    return categoryIcons[categoryName] || '📦'; // Default icon if not found
+  }
+
+  /**
+   * Get color for a specific category
+   */
+  async getCategoryColor(categoryName) {
+    const categoryColors = await this.loadCategoryColors();
+    return categoryColors[categoryName] || '#6B7280'; // Default gray color if not found
   }
 
   /**
